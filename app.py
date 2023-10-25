@@ -1,4 +1,5 @@
 import datetime
+import pytz
 from flask import *
 import pywhatkit
 import requests
@@ -78,10 +79,13 @@ def command_play_music(command):
         return "An error occurred while trying to play the music.Please provide another music"
 
 def command_get_current_time():
-    time = datetime.datetime.now().strftime('%I:%M %p')
-    return f"The current time is {time}"
-    if not time:
-        return "Sorry, I am unable to tell the time."
+    utc_time = datetime.datetime.now(pytz.utc)
+    time_with_timezone = utc_time.strftime('%H:%M:%S %Z')
+    timestamp = datetime.datetime.now().strftime('%I:%M %p %Y-%m-%d')
+    if time_with_timezone:
+        return f"The current time with date: {timestamp}. with time zone offset is {time_with_timezone}."
+    else:
+        return "Sorry, I am unable to provide the time with time zone."
 
 def command_search_wikipedia(command):
     person = command.replace('who is', '').strip()
